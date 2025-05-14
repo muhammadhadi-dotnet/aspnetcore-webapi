@@ -53,5 +53,38 @@ namespace WebApi.Controllers
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetProductById), new {id=product.Id},product);
         }
+
+        [HttpPost("id")]
+        public async Task<ActionResult> update(ProductDTO productDTO,int id)
+        {
+            
+            if (productDTO == null)
+            {
+                return NotFound();
+            }
+            Product model = new Product
+            {
+                Name = productDTO.Name,
+                Description = productDTO.Description
+            };
+
+            _context.Update(model);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetProductById), new { id = productDTO.Id }, productDTO);
+
+        }
+        [HttpDelete("id")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
