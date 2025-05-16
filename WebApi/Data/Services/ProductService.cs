@@ -6,7 +6,7 @@ using WebApi.Model.DTO;
 
 namespace WebApi.Data.Services
 {
-    public class ProductService : IProduct
+    public class ProductService :IProduct
     {
         private readonly MyDbContext _context;
         public ProductService(MyDbContext context)
@@ -66,6 +66,11 @@ namespace WebApi.Data.Services
             product.Name = productDTO.Name;
             product.Description = productDTO.Description;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task Save()
+        {
+           await _context.SaveChangesAsync();
         }
     }
 }

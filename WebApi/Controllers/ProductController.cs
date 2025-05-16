@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebApi.Data.Interfaces;
+using WebApi.Model;
 using WebApi.Model.DTO;
 
 namespace WebApi.Controllers
@@ -9,28 +10,53 @@ namespace WebApi.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProduct _product;
+        private ResponseDto _responseDto;
         public ProductController(IProduct product)
         {
             _product = product;
+            _responseDto = new ResponseDto();
         }
 
         [HttpGet]
 
-        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProducts()
+        public async Task<ResponseDto> GetProducts()
         {
-            var products = await _product.GetAll();
+            try
+            {
+              IEnumerable<ProductDTO> obj = await _product.GetAll();
+              _responseDto.Result = obj;
+              _responseDto.isSuccess = true;
 
-            return Ok(products);
+            }
+            catch(Exception ex)
+            {
+                _responseDto.isSuccess = false;
+                _responseDto.Message = ex.ToString();
+            }
+            return  _responseDto;
         }
 
         [HttpGet("id")]
-        public async  Task<ActionResult<ProductDTO>> GetProductById(int id){
-          var product =await _product.GetProductById(id);
-            if (product == null)
+        public async  Task<ResponseDto> GetById(int id){
+
+            try
             {
-                return NotFound();
+                ProductDTO product = await _product.GetProductById(id);
+
+                //if (product == null)
+                //{
+                //    _responseDto.isSuccess = false;
+                //    _responseDto.Message = "Product Not Found";
+                //}
+                _responseDto.Result = product;
+                _responseDto.isSuccess = true;
             }
-            return Ok(product);
+            catch(Exception ex)
+            {
+                _responseDto.isSuccess = false;
+                _responseDto.Message = ex.ToString();
+            }
+            return _responseDto;
         }
 
         [HttpPost]
@@ -41,7 +67,7 @@ namespace WebApi.Controllers
                 return BadRequest("Product is null");
             }
             await _product.Add(product);
-            return CreatedAtAction(nameof(GetProductById), new {id=product.Id},product);
+            return CreatedAtAction(nameof(GetById), new {id=product.Id},product);
         }
 
         [HttpPost("id")]
@@ -49,7 +75,7 @@ namespace WebApi.Controllers
         {
 
             await _product.Update(productDTO);
-            return CreatedAtAction(nameof(GetProductById), new { id = productDTO.Id }, productDTO);
+            return CreatedAtAction(nameof(GetById), new { id = productDTO.Id }, productDTO);
 
         }
         [HttpDelete("id")]
