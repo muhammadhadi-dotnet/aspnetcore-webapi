@@ -31,7 +31,7 @@ namespace WebApi.Data.Services
 
         public async Task Delete(int Id)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == Id);
+            var product = await _context.Products.FirstAsync(x => x.Id == Id);
             if (product == null) return ;
            _context.Remove(product);
             await _context.SaveChangesAsync();
@@ -62,7 +62,7 @@ namespace WebApi.Data.Services
 
         public async Task Update(ProductDTO productDTO)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(i => i.Id == productDTO.Id);
+            var product = await _context.Products.FirstAsync(i => i.Id == productDTO.Id);
             if (product == null) return ;
             product.Name = productDTO.Name;
             product.Description = productDTO.Description;
