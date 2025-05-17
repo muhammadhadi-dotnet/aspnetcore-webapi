@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApi.Data;
 using WebApi.Data.Interfaces;
-using WebApi.Model;
 using WebApi.Model.DTO;
 
 namespace WebApi.Controllers
@@ -11,10 +11,12 @@ namespace WebApi.Controllers
     {
         private readonly IProduct _product;
         private ResponseDto _responseDto;
-        public ProductController(IProduct product)
+        private readonly MyDbContext _context;
+        public ProductController(IProduct product, MyDbContext context)
         {
             _product = product;
             _responseDto = new ResponseDto();
+            _context = context;
         }
 
         [HttpGet]
@@ -25,13 +27,11 @@ namespace WebApi.Controllers
             {
               IEnumerable<ProductDTO> obj = await _product.GetAll();
               _responseDto.Result = obj;
-              _responseDto.isSuccess = true;
-
             }
             catch(Exception ex)
             {
                 _responseDto.isSuccess = false;
-                _responseDto.Message = ex.ToString();
+                _responseDto.Message = ex.Message;
             }
             return  _responseDto;
         }
@@ -43,46 +43,66 @@ namespace WebApi.Controllers
             {
                 ProductDTO product = await _product.GetProductById(id);
 
-                //if (product == null)
-                //{
-                //    _responseDto.isSuccess = false;
-                //    _responseDto.Message = "Product Not Found";
-                //}
+                if (product == null)
+                {
+                    _responseDto.isSuccess = false;
+                }
                 _responseDto.Result = product;
-                _responseDto.isSuccess = true;
             }
             catch(Exception ex)
             {
                 _responseDto.isSuccess = false;
-                _responseDto.Message = ex.ToString();
+                _responseDto.Message = ex.Message;
             }
             return _responseDto;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(ProductDTO product)
+        public async Task<ResponseDto> Create(ProductDTO product)
         {
-            if (product == null)
+            try
             {
-                return BadRequest("Product is null");
+                if (product == null) _responseDto.isSuccess = false;
+                await _product.Add(product);
+                _responseDto.Result = product;
+
             }
-            await _product.Add(product);
-            return CreatedAtAction(nameof(GetById), new {id=product.Id},product);
+            catch(Exception ex)
+            {
+                _responseDto.isSuccess = false;
+                _responseDto.Message = ex.Message;
+            }
+            return _responseDto;
         }
 
-        [HttpPost("id")]
-        public async Task<ActionResult> update(ProductDTO productDTO)
+        [HttpPut("id")]
+        public async Task<ResponseDto> update(ProductDTO productDTO)
         {
-
-            await _product.Update(productDTO);
-            return CreatedAtAction(nameof(GetById), new { id = productDTO.Id }, productDTO);
-
+            try
+            {
+                await _product.Update(productDTO);
+                _responseDto.Result = productDTO;
+            }
+            catch (Exception ex)
+            {
+                _responseDto.isSuccess = false;
+                _responseDto.Message = ex.Message;
+            }
+            return _responseDto;
         }
         [HttpDelete("id")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ResponseDto> Delete(int id)
         {
-            await _product.Delete(id);
-            return NoContent();
+            try
+            {
+                await _product.Delete(id);
+            }
+            catch(Exception ex)
+            {
+                _responseDto.isSuccess = false;
+                _responseDto.Message = ex.Message;
+            }
+            return _responseDto;
         }
     }
 }

@@ -49,7 +49,8 @@ namespace WebApi.Data.Services
 
         public async Task<ProductDTO> GetProductById(int Id)
         { 
-            var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == Id);
+
+            var product = await _context.Products.FirstAsync(x => x.Id == Id);
             if (product == null) return null;
             return new ProductDTO
             {

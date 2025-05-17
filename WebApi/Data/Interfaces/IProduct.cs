@@ -8,7 +8,6 @@ namespace WebApi.Data.Interfaces
     {
         Task<IEnumerable<ProductDTO>> GetAll();
         Task<ProductDTO> GetProductById(int Id);
-
         Task Add(ProductDTO product);
         Task Update(ProductDTO product);
         Task Delete(int Id);
