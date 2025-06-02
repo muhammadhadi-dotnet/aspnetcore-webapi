@@ -74,7 +74,7 @@ namespace WebApi.Controllers
         {
             try
             {    Category category=_mapper.Map<Category>(categoryDto);
-                _dbContext.Categories.Update(category);
+                _dbContext.Categories.Update(category); 
                 await _dbContext.SaveChangesAsync();
                 _responseDto.Result = _mapper.Map<CategoryDto>(category);
             }
