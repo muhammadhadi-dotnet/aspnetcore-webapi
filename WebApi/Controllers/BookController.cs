@@ -21,8 +21,7 @@ namespace WebApi.Controllers
         }
 
 
-        [HttpGet]
-        [Route("GetBooks")]
+        [HttpGet("GetBooks")]
         public async Task<ResponseDto> Index()
         {
             try
@@ -37,8 +36,7 @@ namespace WebApi.Controllers
             return _response;
         }
 
-        [HttpPost]
-        [Route("addNewBook")]
+        [HttpPost("addNewBook")]
         public async Task<ResponseDto> AddBook(Book book)
         {
             try
@@ -55,7 +53,7 @@ namespace WebApi.Controllers
             return _response;
         }
 
-        [HttpGet("id")]
+        [HttpGet("get-book-by-id/{id}")]
         public async Task<ResponseDto> GetBookById(int id)
         {
             try
@@ -77,7 +75,7 @@ namespace WebApi.Controllers
             return _response;
         }
 
-        [HttpPut]
+        [HttpPut("update-book/{id}")]
         public async Task<ResponseDto> UpdateBook(Book book)
         {
             try
@@ -89,7 +87,7 @@ namespace WebApi.Controllers
                 }
                 _context.Books.Update(bookObj);
                 await _context.SaveChangesAsync();
-                _response.Message = "Book delete successfuly";
+                _response.Message = "Book update successfuly";
 
             }
             catch (Exception ex)
@@ -101,7 +99,7 @@ namespace WebApi.Controllers
         }
 
 
-        [HttpDelete]
+        [HttpDelete("delete-book/{id}")]
         public async Task<ResponseDto> Delete(int id)
         {
             try
