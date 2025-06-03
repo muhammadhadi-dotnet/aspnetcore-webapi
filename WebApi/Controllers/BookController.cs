@@ -75,7 +75,7 @@ namespace WebApi.Controllers
             return _response;
         }
 
-        [HttpPut("update-book/{id}")]
+        [HttpPut("update-book")]
         public async Task<ResponseDto> UpdateBook(Book book)
         {
             try
@@ -85,7 +85,9 @@ namespace WebApi.Controllers
                 {
                     _response.isSuccess = false;
                 }
-                _context.Books.Update(bookObj);
+                bookObj.Name = book.Name;
+                bookObj.Author = book.Author;
+                bookObj.Price = book.Price;
                 await _context.SaveChangesAsync();
                 _response.Message = "Book update successfuly";
 
